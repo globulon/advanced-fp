@@ -27,7 +27,7 @@ that we usually abstract code wise
 In a first step we will implement the simple versions per structure using the
 simplified approach proposed in the first part 
 
-###Catamorphism (fold)
+#### Catamorphism (fold)
 A catamorphism destructs iteratively a recursive structure T
 while constructing a new type U   
 That effort requires an Algebra that provides a default value of type U
@@ -41,7 +41,7 @@ data Algebra t u = Algebra {
 }
 ```
  
-###Anamorphism(unfold)
+#### Anamorphism(unfold)
 An anamorphism construct iteratively a new recursive structure T
 by destroying a structure of type U in multiple steps.
 This operation is the counter part (co-algebra) of the catamorphism
