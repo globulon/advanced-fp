@@ -1,4 +1,4 @@
-module Sorting.CatamorphismSpec where
+module Sorting.CatamorphismSpec(spec) where
 
 import Sorting.Catamorphism(Catamorphism(..), Algebra(..))
 import Test.Hspec
