@@ -1,8 +1,8 @@
 module Sorting.Catamorphism(Algebra(..), Catamorphism(..)) where
 
-data Algebra x u = Algebra {
+data Algebra t u = Algebra {
   empty :: u,
-  fold :: x -> u -> u
+  fold :: t -> u -> u
 }
 
 class Catamorphism m where
