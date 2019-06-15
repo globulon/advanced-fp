@@ -1,6 +1,6 @@
 module Exercises.ListsSpec(spec) where
 
-import Exercises.Lists(reverse', count', primes)
+import Exercises.Lists(reverse', count', primes, fac')
 import Test.Hspec
 import Test.QuickCheck
 
@@ -9,6 +9,8 @@ spec :: Spec
 spec = do
   spec_reverse
   spec_count
+  spec_fac
+  spec_prime
 
 spec_reverse :: Spec
 spec_reverse = describe "reverse'" $ do
@@ -32,6 +34,13 @@ spec_prime = describe "prime should" $ do
     primes [] `shouldBe` []
   it "give series in  boundaries" $
     (take 10 . primes $ [2..20]) `shouldBe` [2,3,5,7,11,13,17,19]
+
+spec_fac :: Spec
+spec_fac = describe "factorial" $ do
+  it "should find 5!" $
+    fac' 5 `shouldBe` 120
+  it "should find 1" $
+    fac' 1 `shouldBe` 1
 
 
 checkReverse :: Int -> Bool

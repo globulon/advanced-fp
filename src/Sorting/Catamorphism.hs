@@ -1,3 +1,5 @@
+{-# LANGUAGE ConstrainedClassMethods #-}
+
 module Sorting.Catamorphism(Algebra(..), Catamorphism(..)) where
 
 data Algebra t u = Algebra {
