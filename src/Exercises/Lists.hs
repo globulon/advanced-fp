@@ -13,7 +13,7 @@ count' :: (Num a, Eq a, Ord a) => a -> [a]
 count'  = ana (CoAlgebra unfoldCount)
 
 fac' :: Int -> Int
-fac' = hylo (Proxy :: Proxy []) (CoAlgebra unfoldCount) (Algebra 1 (*))
+fac' = hylo (CoAlgebra unfoldCount, Algebra 1 (*))
 
 primes :: [Int] -> [Int]
 primes = ana (CoAlgebra unfoldPrimes)
