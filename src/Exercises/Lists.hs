@@ -1,10 +1,9 @@
-module Exercises.Lists(reverse', count', primes, fac') where
+module Exercises.Lists(reverse', count', primes, fac', power) where
 
 import Data.Proxy
 import Sorting.Catamorphism(Algebra(..), Catamorphism(..))
 import Sorting.Anamorphism(Anamorphism(..), CoAlgebra(..))
 import Sorting.Hylomorphism(Hylomorphism(..))
-
 
 reverse' :: [a] -> [a]
 reverse' = cata (Algebra [] (\x y -> y ++ [x]))
@@ -14,6 +13,9 @@ count'  = ana (CoAlgebra unfoldCount)
 
 fac' :: Int -> Int
 fac' = hylo (CoAlgebra unfoldCount, Algebra 1 (*))
+
+power :: Int -> Int -> Int
+power x = hylo (CoAlgebra unfoldCount, Algebra 1 (\_ v -> v  * x))
 
 primes :: [Int] -> [Int]
 primes = ana (CoAlgebra unfoldPrimes)

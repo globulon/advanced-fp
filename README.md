@@ -8,7 +8,7 @@ held in Barga, Portugal, in September 1998
   - [ ] Lists
       - [X] Catamorphism
       - [X] Anamorphism
-      - [ ] Hylomorphism
+      - [X] Hylomorphism
       - [ ] Sorts
   - [ ] Trees
       - [ ] Catamorphism

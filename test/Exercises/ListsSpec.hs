@@ -1,6 +1,6 @@
 module Exercises.ListsSpec(spec) where
 
-import Exercises.Lists(reverse', count', primes, fac')
+import Exercises.Lists(reverse', count', primes, fac', power)
 import Test.Hspec
 import Test.QuickCheck
 
@@ -11,6 +11,7 @@ spec = do
   spec_count
   spec_fac
   spec_prime
+  spec_pow
 
 spec_reverse :: Spec
 spec_reverse = describe "reverse'" $ do
@@ -41,6 +42,13 @@ spec_fac = describe "factorial" $ do
     fac' 5 `shouldBe` 120
   it "should find 1" $
     fac' 1 `shouldBe` 1
+
+spec_pow :: Spec
+spec_pow = describe "power" $ do
+  it "should process power 2 4" $
+    power 2 4 `shouldBe` 16
+  it "should process power x 0" $
+    property (\x -> power x 0 == 1)
 
 
 checkReverse :: Int -> Bool
