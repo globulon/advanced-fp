@@ -1,5 +1,18 @@
 # Advanced FP
 
+## Haskell Categorical
+
+- [ ] GADT's
+- [X] Yoneda Lemna
+- [X] Profunctor
+
+## Optics
+
+- [ ] Lenses
+- [ ] Prisms
+
+## Sorting
+
 Exploring the content from the Third Summer School on Advanced Functional Programming, 
 held in Barga, Portugal, in September 1998
 
