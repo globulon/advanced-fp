@@ -5,7 +5,8 @@
 - [ ] GADT's
 - [X] Yoneda Lemna
 - [X] Profunctor
-
+- [ ] Isomorhisms
+    - [ ] Reason Isomorphically! (R. Hinze, DWH Jame)
 ## Optics
 
 - [ ] Lenses
