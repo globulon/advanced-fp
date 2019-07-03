@@ -31,3 +31,15 @@ instance Cartesian (->) where
 instance CoCartesian (->) where
   right = fmap
   {-# INLINE right #-}
+
+assoc :: ((a, b), c) -> (a, (b, c))
+assoc ((a, b), c) = (a, (b, c))
+
+assoc' :: (a, (b, c)) -> ((a, b), c)
+assoc' (a, (b, c)) = ((a, b), c)
+
+lunit :: ((), a) -> a
+lunit (_, a) = a
+
+lunit' :: a -> ((), a)
+lunit' x = ((), x)

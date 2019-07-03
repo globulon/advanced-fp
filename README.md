@@ -3,10 +3,10 @@
 ## Haskell Categorical
 
 - [ ] GADT's
-- [X] Yoneda Lemna
+- [X] Yoneda Lemna (What You Needa know about Yoneda (G. Boisseau, J. Gibbons))
 - [X] Profunctor
-- [ ] Isomorhisms
-    - [ ] Reason Isomorphically! (R. Hinze, DWH Jame)
+- [ ] Isomorphisms (Reason Isomorphically! (R. Hinze, DWH Jame))
+
 ## Optics
 
 - [ ] Lenses
@@ -15,7 +15,7 @@
 ## Sorting
 
 Exploring the content from the Third Summer School on Advanced Functional Programming, 
-held in Barga, Portugal, in September 1998
+held in Braga, Portugal, in September 1998
 
 
 - [ ] Part One Sorting Morphisms
