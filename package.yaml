@@ -24,6 +24,8 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+  - mtl
 
 executables:
   advanced-fp-exe:

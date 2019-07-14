@@ -1,5 +1,7 @@
 module Category.Profunctor(Profunctor(..)) where
 
+newtype UpStar f a b =  UpStar { unUpStar :: a -> f b }
+
 class Profunctor p where
   dimap :: (c -> a) -> (b -> d) -> p a b -> p c d
   dimap f g = lmap f . rmap g
@@ -19,6 +21,10 @@ class Profunctor p => Cartesian p where
 class Profunctor p => CoCartesian p where
   right :: p a b -> p (Either c a) (Either c b)
   {-# MINIMAL right #-}
+
+instance (Functor f) => Profunctor (UpStar f) where
+  -- (c -> a) -> (b -> d) -> (a -> f b)  -> (c -> f d)
+  dimap f g (UpStar h) = UpStar (fmap g . h .f)
 
 instance Profunctor (->) where
   dimap f h g = h . g . f
