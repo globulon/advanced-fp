@@ -1,6 +1,12 @@
-module Category.Profunctor(Profunctor(..)) where
+{-# LANGUAGE TupleSections #-}
 
-newtype UpStar f a b =  UpStar { unUpStar :: a -> f b }
+module Category.Profunctor
+  ( Profunctor(..)
+  , Cartesian(..)
+  , CoCartesian(..)
+  ) where
+
+import Control.Arrow
 
 class Profunctor p where
   dimap :: (c -> a) -> (b -> d) -> p a b -> p c d
@@ -12,31 +18,59 @@ class Profunctor p where
   {-# INLINE dimap #-}
   {-# INLINE lmap #-}
   {-# INLINE rmap #-}
-  {-# MINIMAL dimap | (lmap, rmap)  #-}
+  {-# MINIMAL dimap | (lmap, rmap) #-}
 
-class Profunctor p => Cartesian p where
-  second :: p a b -> p (c, a) (c, b)
-  {-# MINIMAL second #-}
-
-class Profunctor p => CoCartesian p where
-  right :: p a b -> p (Either c a) (Either c b)
-  {-# MINIMAL right #-}
-
-instance (Functor f) => Profunctor (UpStar f) where
-  -- (c -> a) -> (b -> d) -> (a -> f b)  -> (c -> f d)
-  dimap f g (UpStar h) = UpStar (fmap g . h .f)
+{-|
+  Whenever you have a functor you can lift it
+  into a profunctor by reifying an abstraction
+  a -> f b
+  We chose here a Kleisli. That might be an improper
+  choice. We could force ourselves to redefine a new datatype again
+|-}
+instance (Functor f) => Profunctor (Kleisli f) where
+  dimap f g (Kleisli h) = Kleisli (fmap g . h . f)
 
 instance Profunctor (->) where
   dimap f h g = h . g . f
   {-# INLINE dimap #-}
 
+class Profunctor p => Cartesian p where
+  first :: p a b -> p (a, c) (b, c)
+  second :: p a b -> p (c, a) (c, b)
+  {-# MINIMAL first, second #-}
+
 instance Cartesian (->) where
-  second = fmap
+  first h = cross h id
+  second  = cross id
+  {-# INLINE first #-}
   {-# INLINE second #-}
 
+instance Functor f => Cartesian (Kleisli f) where
+  first  k = Kleisli ( rstrength . cross (runKleisli k) id )
+  second k = Kleisli ( lstrength . cross id (runKleisli k) )
+  {-# INLINE first #-}
+  {-# INLINE second #-}
+
+rstrength :: (Functor f) => (f a, b) -> f (a , b)
+rstrength (fa, y) = fmap (,y) fa
+
+lstrength :: (Functor f) => (a, f b) -> f (a , b)
+lstrength (x, fb) = fmap (x,) fb
+
+class Profunctor p =>  CoCartesian p where
+  left :: p a b -> p (Either a c) (Either b c)
+  right :: p a b -> p (Either c a) (Either c b)
+  {-# MINIMAL left, right #-}
+
 instance CoCartesian (->) where
-  right = fmap
+  left  h = plus h id
+  right h = plus id h
+  {-# INLINE left #-}
   {-# INLINE right #-}
+
+plus :: (a -> c) -> (b -> d) -> Either a b -> Either c d
+plus f g (Left x) = Left (f x)
+plus _ g (Right y) = Right (g y)
 
 assoc :: ((a, b), c) -> (a, (b, c))
 assoc ((a, b), c) = (a, (b, c))
@@ -49,3 +83,6 @@ lunit (_, a) = a
 
 lunit' :: a -> ((), a)
 lunit' x = ((), x)
+
+cross :: (a -> b) -> (c -> d) -> (a, c) -> (b, d)
+cross f g (x, y) = (f x, g y)
