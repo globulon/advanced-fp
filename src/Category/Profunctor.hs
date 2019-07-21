@@ -68,6 +68,12 @@ instance CoCartesian (->) where
   {-# INLINE left #-}
   {-# INLINE right #-}
 
+instance Applicative f => CoCartesian (Kleisli f) where
+  left  (Kleisli k) = Kleisli  ( either (fmap Left . k) (pure . Right) )
+  right (Kleisli k) = Kleisli (either  (pure . Left) (fmap Right . k))
+  {-# INLINE left #-}
+  {-# INLINE right #-}
+
 plus :: (a -> c) -> (b -> d) -> Either a b -> Either c d
 plus f g (Left x) = Left (f x)
 plus _ g (Right y) = Right (g y)
