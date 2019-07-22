@@ -57,6 +57,8 @@ rstrength (fa, y) = fmap (,y) fa
 lstrength :: (Functor f) => (a, f b) -> f (a , b)
 lstrength (x, fb) = fmap (x,) fb
 
+
+
 class Profunctor p =>  CoCartesian p where
   left :: p a b -> p (Either a c) (Either b c)
   right :: p a b -> p (Either c a) (Either c b)
@@ -73,6 +75,24 @@ instance Applicative f => CoCartesian (Kleisli f) where
   right (Kleisli k) = Kleisli (either  (pure . Left) (fmap Right . k))
   {-# INLINE left #-}
   {-# INLINE right #-}
+
+class Profunctor p => Monoidal p where
+  par :: p a b -> p c d -> p (a, c) (b, d)
+  pempty :: p () ()
+  {-# MINIMAL par, pempty #-}
+
+instance Monoidal (->) where
+  par = cross
+  pempty = id
+  {-# INLINE par #-}
+  {-# INLINE pempty #-}
+
+instance Applicative f => Monoidal (Kleisli f) where
+  par (Kleisli h) (Kleisli k) = Kleisli (pair h k)
+  pempty                      = Kleisli pure
+
+pair :: Applicative f => (a -> f b) -> (c -> f d) -> (a, c) -> f (b, d)
+pair h k (x, y) = pure (,) <*> h x <*> k y
 
 plus :: (a -> c) -> (b -> d) -> Either a b -> Either c d
 plus f g (Left x) = Left (f x)
