@@ -4,6 +4,8 @@ module Category.Profunctor
   ( Profunctor(..)
   , Cartesian(..)
   , CoCartesian(..)
+  , Monoidal(..)
+  , cross
   ) where
 
 import Control.Arrow
@@ -50,14 +52,6 @@ instance Functor f => Cartesian (Kleisli f) where
   second k = Kleisli ( lstrength . cross id (runKleisli k) )
   {-# INLINE first #-}
   {-# INLINE second #-}
-
-rstrength :: (Functor f) => (f a, b) -> f (a , b)
-rstrength (fa, y) = fmap (,y) fa
-
-lstrength :: (Functor f) => (a, f b) -> f (a , b)
-lstrength (x, fb) = fmap (x,) fb
-
-
 
 class Profunctor p =>  CoCartesian p where
   left :: p a b -> p (Either a c) (Either b c)
@@ -112,3 +106,9 @@ lunit' x = ((), x)
 
 cross :: (a -> b) -> (c -> d) -> (a, c) -> (b, d)
 cross f g (x, y) = (f x, g y)
+
+rstrength :: (Functor f) => (f a, b) -> f (a , b)
+rstrength (fa, y) = fmap (,y) fa
+
+lstrength :: (Functor f) => (a, f b) -> f (a , b)
+lstrength (x, fb) = fmap (x,) fb
