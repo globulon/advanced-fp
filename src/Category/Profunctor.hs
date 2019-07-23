@@ -8,7 +8,7 @@ module Category.Profunctor
   , cross
   ) where
 
-import Control.Arrow
+import           Control.Arrow
 
 class Profunctor p where
   dimap :: (c -> a) -> (b -> d) -> p a b -> p c d
@@ -36,41 +36,47 @@ instance Profunctor (->) where
   dimap f h g = h . g . f
   {-# INLINE dimap #-}
 
-class Profunctor p => Cartesian p where
+class Profunctor p =>
+      Cartesian p
+  where
   first :: p a b -> p (a, c) (b, c)
   second :: p a b -> p (c, a) (c, b)
   {-# MINIMAL first, second #-}
 
 instance Cartesian (->) where
   first h = cross h id
-  second  = cross id
+  second = cross id
   {-# INLINE first #-}
   {-# INLINE second #-}
 
 instance Functor f => Cartesian (Kleisli f) where
-  first  k = Kleisli ( rstrength . cross (runKleisli k) id )
-  second k = Kleisli ( lstrength . cross id (runKleisli k) )
+  first k = Kleisli (rstrength . cross (runKleisli k) id)
+  second k = Kleisli (lstrength . cross id (runKleisli k))
   {-# INLINE first #-}
   {-# INLINE second #-}
 
-class Profunctor p =>  CoCartesian p where
+class Profunctor p =>
+      CoCartesian p
+  where
   left :: p a b -> p (Either a c) (Either b c)
   right :: p a b -> p (Either c a) (Either c b)
   {-# MINIMAL left, right #-}
 
 instance CoCartesian (->) where
-  left  h = plus h id
+  left h = plus h id
   right h = plus id h
   {-# INLINE left #-}
   {-# INLINE right #-}
 
 instance Applicative f => CoCartesian (Kleisli f) where
-  left  (Kleisli k) = Kleisli  ( either (fmap Left . k) (pure . Right) )
-  right (Kleisli k) = Kleisli (either  (pure . Left) (fmap Right . k))
+  left (Kleisli k) = Kleisli (either (fmap Left . k) (pure . Right))
+  right (Kleisli k) = Kleisli (either (pure . Left) (fmap Right . k))
   {-# INLINE left #-}
   {-# INLINE right #-}
 
-class Profunctor p => Monoidal p where
+class Profunctor p =>
+      Monoidal p
+  where
   par :: p a b -> p c d -> p (a, c) (b, d)
   pempty :: p () ()
   {-# MINIMAL par, pempty #-}
@@ -83,13 +89,13 @@ instance Monoidal (->) where
 
 instance Applicative f => Monoidal (Kleisli f) where
   par (Kleisli h) (Kleisli k) = Kleisli (pair h k)
-  pempty                      = Kleisli pure
+  pempty = Kleisli pure
 
 pair :: Applicative f => (a -> f b) -> (c -> f d) -> (a, c) -> f (b, d)
 pair h k (x, y) = pure (,) <*> h x <*> k y
 
 plus :: (a -> c) -> (b -> d) -> Either a b -> Either c d
-plus f g (Left x) = Left (f x)
+plus f g (Left x)  = Left (f x)
 plus _ g (Right y) = Right (g y)
 
 assoc :: ((a, b), c) -> (a, (b, c))
@@ -107,8 +113,8 @@ lunit' x = ((), x)
 cross :: (a -> b) -> (c -> d) -> (a, c) -> (b, d)
 cross f g (x, y) = (f x, g y)
 
-rstrength :: (Functor f) => (f a, b) -> f (a , b)
-rstrength (fa, y) = fmap (,y) fa
+rstrength :: (Functor f) => (f a, b) -> f (a, b)
+rstrength (fa, y) = fmap (, y) fa
 
-lstrength :: (Functor f) => (a, f b) -> f (a , b)
-lstrength (x, fb) = fmap (x,) fb
+lstrength :: (Functor f) => (a, f b) -> f (a, b)
+lstrength (x, fb) = fmap (x, ) fb
