@@ -92,8 +92,10 @@ adapterP2C :: AdapterP a b s t -> Adapter a b s t
 adapterP2C l = l (Adapter id id)
 
 lensC2P :: Lens a b s t -> LensP a b s t
--- dimap :: (s -> a) -> (b -> t) -> p a b -> p s t
-lensC2P (Lens vw upd) = undefined
+lensC2P (Lens vw upd) = dimap (fork vw id) upd . first
+
+lensP2C :: LensP a b s t -> Lens a b s t
+lensP2C l = l (Lens id fst)
 {-|
   Applies 2 functions to an argument to build a pair
 |-}
