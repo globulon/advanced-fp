@@ -13,7 +13,7 @@ module Category.Optics
   ) where
 
 import           Category.Profunctor (Cartesian (..), CoCartesian (..),
-                                      Monoidal (..), Profunctor (..), cross)
+                                      Monoidal (..), Profunctor (..), cross, plus)
 
 data Lens a b s t = Lens
   { view   :: s -> a
@@ -30,20 +30,21 @@ data Adapter a b s t = Adapter
   , to   :: b -> t
   }
 
-instance Profunctor (Lens a b) where
+instance Profunctor (Lens a b)
   {-|
     (s' -> s) -> (t -> t') -> Lens a b s t -> Lens a b s' t'
     (s' -> s) -> (t -> t') -> (Lens s -> a (b,s) -> t) -> (Lens s' -> a (b,s') -> t')
   |-}
+      where
   dimap f g (Lens vw upd) = Lens (vw . f) (g . upd . cross id f)
   {-# INLINE dimap #-}
 
-
-instance Cartesian (Lens a b) where
+instance Cartesian (Lens a b)
   {-|
   (b,s) -> t    (b,(s, c)) -> (t, c)
     (Lens s -> a (b,s) -> t) -> (Lens (s, c) -> a (b,(s, c)) -> (t, c))
   |-}
+      where
   first (Lens vw upd) = Lens (vw . fst) (fork (upd . cross id fst) (snd . snd))
   {-# INLINE first #-}
   {-|
@@ -53,10 +54,25 @@ instance Cartesian (Lens a b) where
   second (Lens vw upd) = Lens (vw . snd) (fork (fst . snd) (upd . cross id snd))
   {-# INLINE second #-}
 
-
-instance Profunctor (Adapter a b) where
+instance Profunctor (Adapter a b)
   {-| (s' -> s) -> (t -> t') -> Adapter a b s t -> Adapter a b s' t' |-}
+                                                                         where
   dimap f g (Adapter from to) = Adapter (from . f) (g . to)
+  {-# INLINE dimap #-}
+
+instance Profunctor (Prism a b) where
+  dimap f g (Prism match build) = Prism (plus g id . match . f) (g . build)
+  {-# INLINE dimap #-}
+
+-- either (a -> c) -> (b -> c) -> Either a b -> c
+instance CoCartesian (Prism a b) where
+    -- (s -> t + a) (b -> t)  (c + s) -> c + t + a  b -> c + t
+--  left :: p s t -> p (Either s c) (Either t c)
+  left (Prism match build) = Prism (either (plus Left id. match) (Left . Right)) (Left . build)
+  {-# INLINE left #-}
+--  right :: p a b -> p (Either c a) (Either c b)
+  right (Prism match build) = Prism (either (Left . Left) (plus Right id  . match)) (Right . build)
+  {-# INLINE right #-}
 
 {-|
   Recall the concrete representation of adapters
@@ -96,6 +112,7 @@ lensC2P (Lens vw upd) = dimap (fork vw id) upd . first
 
 lensP2C :: LensP a b s t -> Lens a b s t
 lensP2C l = l (Lens id fst)
+
 {-|
   Applies 2 functions to an argument to build a pair
 |-}

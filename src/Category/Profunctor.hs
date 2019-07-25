@@ -6,6 +6,7 @@ module Category.Profunctor
   , CoCartesian(..)
   , Monoidal(..)
   , cross
+  , plus
   ) where
 
 import           Control.Arrow
